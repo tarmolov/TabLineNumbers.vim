@@ -2,6 +2,7 @@
 " File: TabLineNumbers.vim
 " Description: vim global plugin that provides a numbers for tabs
 " Maintainer: Konishchev Dmitry
+" Contributor: Alexander Tarmolov
 " Last Change: 17 July, 2008
 " Web Page: http://konishchevdmitry.blogspot.com/2008/07/vim.html
 " License: This program is free software. It comes without any warranty,
@@ -11,31 +12,29 @@
 " See http://sam.zoy.org/wtfpl/COPYING for more details.
 " ============================================================================
 
-" Задаем собственные функции для назначения имен заголовкам табов -->
 function! MyTabLine()
     let tabline = ''
 
-    " Формируем tabline для каждой вкладки -->
+    " create the tabline for each tab
     for i in range(tabpagenr('$'))
-        " Подсвечиваем заголовок выбранной в данный момент вкладки.
+        " highlight current tab title
         if i + 1 == tabpagenr()
             let tabline .= '%#TabLineSel#'
         else
             let tabline .= '%#TabLine#'
         endif
 
-        " Устанавливаем номер вкладки
+        " set tab number
         let tabline .= '%' . (i + 1) . 'T'
 
-        " Получаем имя вкладки
+        " get tab name
         let tabline .= ' %{MyTabLabel(' . (i + 1) . ')} |'
     endfor
-    " Формируем tabline для каждой вкладки <--
 
-    " Заполняем лишнее пространство
+    " fill other space
     let tabline .= '%#TabLineFill#%T'
 
-    " Выровненная по правому краю кнопка закрытия вкладки
+    " Allign close button to right side
     if tabpagenr('$') > 1
         let tabline .= '%=%#TabLine#%999XX'
     endif
@@ -47,7 +46,7 @@ function! MyTabLabel(n)
     let label = ''
     let buflist = tabpagebuflist(a:n)
 
-    " Имя файла и номер вкладки -->
+    " Filename and tab number
     let label = substitute(bufname(buflist[tabpagewinnr(a:n) - 1]), '.*/', '', '')
 
     if label == ''
@@ -55,18 +54,14 @@ function! MyTabLabel(n)
     endif
 
     let label .= ' (' . a:n . ')'
-    " Имя файла и номер вкладки <--
 
-    " Определяем, есть ли во вкладке хотя бы один
-    " модифицированный буфер.
-    " -->
+    " detect modified buffers
     for i in range(len(buflist))
         if getbufvar(buflist[i], "&modified")
             let label = '[+] ' . label
             break
         endif
     endfor
-    " <--
 
     return label
 endfunction
